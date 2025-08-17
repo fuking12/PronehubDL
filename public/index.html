@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PronhubDL</title>
+</head>
+<body>
+  <h1>PronhubDL Video Downloader</h1>
+  <input type="text" id="urlInput" placeholder="Enter video URL" style="width: 300px;">
+  <button onclick="fetchVideo()">Get Download Links</button>
+  <div id="result"></div>
+
+  <script>
+    async function fetchVideo() {
+      const urlInput = document.getElementById('urlInput').value;
+      if (!urlInput) {
+        document.getElementById('result').innerHTML = 'Please enter a valid URL';
+        return;
+      }
+
+      try {
+        const encodedUrl = encodeURIComponent(urlInput);
+        const response = await fetch(`https://9xbuddy.io/en/api?url=${encodedUrl}`);
+        const data = await response.json();
+
+        if (data.status === 'success') {
+          let output = `
+            <p><strong>Status:</strong> ${data.status}</p>
+            <p><strong>Video Title:</strong> ${data.video_title}</p>
+            <p><strong>Uploader:</strong> ${data.video_uploader}</p>
+            <p><strong>Upload Date:</strong> ${data.video_upload_date}</p>
+            <p><strong>Analyze Time:</strong> ${data.analyze_time}</p>
+            <p><strong>Video Cover:</strong> <a href="${data.video_cover}" target="_blank">View Cover</a></p>
+            <p><strong>Original URL:</strong> <a href="${data.original_url}" target="_blank">View Original</a></p>
+            <p><strong>Download Links:</strong></p>
+            <ul>
+          `;
+          data.format.forEach(f => {
+            output += `<li>${f.resolution}p: <a href="${f.download_url.replace('hubcdnhubtemp.p2mate.com', 'hubcdnhub04.p2mate.com')}" target="_blank">${f.download_url.replace('hubcdnhubtemp.p2mate.com', 'hubcdnhub04.p2mate.com')}</a></li>`;
+          });
+          output += '</ul>';
+          document.getElementById('result').innerHTML = output;
+        } else {
+          document.getElementById('result').innerHTML = 'Error: Could not fetch video details';
+        }
+      } catch (error) {
+        document.getElementById('result').innerHTML = `Error: ${error.message}`;
+      }
+    }
+  </script>
+</body>
+</html>
